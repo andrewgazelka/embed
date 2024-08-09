@@ -1,0 +1,33 @@
+[package]
+name = "embed"
+version = "0.1.0"
+edition = "2021"
+authors = ["Andrew Gazelka <andrew.gazelka@gmail.com>"]
+readme = "README.md"
+
+[dependencies]
+anyhow = "1.0.86"
+ndarray = "0.16.0"
+rust-bert = { version = "0.22.0" , features = ["remote"] }
+tch = { version = "0.14.0" , features = ["download-libtorch"] }
+#anyhow = "1.0.86"
+#ndarray = "0.16.0"
+#onnxruntime = "0.0.14"
+#rust-bert = { version = "0.22.0"  }
+
+[lints.rust]
+rust_2018_idioms = {level = "deny", priority = -1}
+
+
+[lints.clippy]
+complexity = "deny"
+
+# 2021
+
+
+nursery = { level = "deny", priority = -1 }
+
+pedantic = "deny"
+perf = "deny"
+style = "deny"
+suspicious = "deny"
