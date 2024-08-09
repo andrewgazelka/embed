@@ -5,6 +5,14 @@ use wgpu::{
 
 const WORKGROUP_SIZE: u32 = 16;
 
+#[repr(C)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+struct Params {
+    m: u32,
+    n: u32,
+    k: u32,
+}
+
 #[expect(clippy::too_many_lines, clippy::many_single_char_names)]
 pub async fn cosine(a: &[f32], b: &[f32], m: u32, n: u32, k: u32) -> anyhow::Result<Vec<f32>> {
     let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
@@ -55,9 +63,10 @@ pub async fn cosine(a: &[f32], b: &[f32], m: u32, n: u32, k: u32) -> anyhow::Res
         mapped_at_creation: false,
     });
 
+    let params = Params { m, n, k };
     let params_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
         label: Some("Params Buffer"),
-        contents: bytemuck::cast_slice(&[m, n, k]),
+        contents: bytemuck::cast_slice(&[params]),
         usage: wgpu::BufferUsages::UNIFORM,
     });
 

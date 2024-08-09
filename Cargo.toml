@@ -10,7 +10,7 @@ anyhow = "1.0.86"
 ndarray = "0.16.0"
 rust-bert = { version = "0.22.0" , features = ["remote"] }
 tch = { version = "0.14.0" , features = ["download-libtorch"] }
-bytemuck = "1.16.3"
+bytemuck = { version = "1.16.3", features = ["derive"] }
 wgpu = "22.1.0"
 futures = "0.3.30"
 tokio = { version = "1.39.2", features = ["full"] }
