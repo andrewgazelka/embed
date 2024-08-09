@@ -1,16 +1,17 @@
 use rust_bert::pipelines::sentence_embeddings::{
     SentenceEmbeddingsBuilder, SentenceEmbeddingsModelType,
 };
-use ndarray::{Array2, ArrayView2};
 
-fn cosine_similarity(a: ArrayView2<'_, f32>, b: ArrayView2<'_, f32>) -> Array2<f32> {
-    let norm_a = a.map_axis(ndarray::Axis(1), |row| row.dot(&row).sqrt());
-    let norm_b = b.map_axis(ndarray::Axis(1), |row| row.dot(&row).sqrt());
+mod similarity;
 
-    let dot_product = a.dot(&b.t());
-
-    dot_product / (&norm_a.insert_axis(ndarray::Axis(1)) * &norm_b)
-}
+// fn cosine_similarity(a: ArrayView2<'_, f32>, b: ArrayView2<'_, f32>) -> Array2<f32> {
+//     let norm_a = a.map_axis(ndarray::Axis(1), |row| row.dot(&row).sqrt());
+//     let norm_b = b.map_axis(ndarray::Axis(1), |row| row.dot(&row).sqrt());
+//
+//     let dot_product = a.dot(&b.t());
+//
+//     dot_product / (&norm_a.insert_axis(ndarray::Axis(1)) * &norm_b)
+// }
 
 fn main() -> anyhow::Result<()> {
     let model = SentenceEmbeddingsBuilder::remote(SentenceEmbeddingsModelType::AllMiniLmL12V2)
@@ -37,11 +38,30 @@ fn main() -> anyhow::Result<()> {
         (doc_embeddings.len(), doc_embeddings[0].len())
     );
 
-    let query_array = Array2::from_shape_vec((queries.len(), query_embeddings[0].len()), query_embeddings.into_iter().flatten().collect())?;
-    let doc_array = Array2::from_shape_vec((docs.len(), doc_embeddings[0].len()), doc_embeddings.into_iter().flatten().collect())?;
+    let query_embeddings_len = query_embeddings[0].len() as u32;
 
-    let similarities = cosine_similarity(query_array.view(), doc_array.view());
-    println!("Similarities:\n{similarities:?}");
+    let query_array: Vec<f32> = query_embeddings.into_iter().flatten().collect();
+    let doc_array: Vec<f32> = doc_embeddings.into_iter().flatten().collect();
+
+    // create tokio runtine
+    let rt = tokio::runtime::Runtime::new().unwrap();
+
+    println!("blocking on");
+    rt.block_on(async {
+        let similarities = similarity::cosine(
+            &query_array,
+            &doc_array,
+            u32::try_from(queries.len()).unwrap(),
+            u32::try_from(docs.len()).unwrap(),
+            query_embeddings_len,
+        ).await?;
+
+        for (i, similarity) in similarities.iter().enumerate() {
+            println!("{i}: {similarity}");
+        }
+
+        anyhow::Ok(())
+    }).unwrap();
 
     Ok(())
 }
