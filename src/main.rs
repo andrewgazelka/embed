@@ -13,6 +13,7 @@ fn main() -> anyhow::Result<()> {
     let queries = vec![
         "What are some ways to reduce stress?",
         "What are the benefits of drinking green tea?",
+        "What the sigma?"
     ];
     let docs = vec![
         "There are many effective ways to reduce stress. Some common techniques include deep \
@@ -26,6 +27,7 @@ fn main() -> anyhow::Result<()> {
          heart health, enhanced cognitive function, and a reduced risk of certain types of \
          cancer. The polyphenols in green tea may also have anti-inflammatory and weight loss \
          properties.",
+        "Ohio gyatt rizz"
     ];
 
     let query_embeddings = model.encode(&queries)?;

@@ -69,7 +69,7 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     }
 
     // Calculate the final similarity.
-    let similarity = dot_product / (sqrt(norm_a) * sqrt(norm_b));
+    let similarity = dot_product / (sqrt(norm_a * norm_b));
 
     // Store the result in the right place.
     // We're filling in the cell at (row, col) in our result grid.
