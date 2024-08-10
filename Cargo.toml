@@ -7,7 +7,6 @@ readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.86"
-ndarray = "0.16.0"
 rust-bert = { version = "0.22.0" , features = ["remote"] }
 tch = { version = "0.14.0" , features = ["download-libtorch"] }
 bytemuck = { version = "1.16.3", features = ["derive"] }
