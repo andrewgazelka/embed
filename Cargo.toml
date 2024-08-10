@@ -15,6 +15,7 @@ wgpu = "22.1.0"
 futures = "0.3.30"
 tokio = { version = "1.39.2", features = ["full"] }
 prettytable = "0.10.0"
+textwrap = "0.16.1"
 #anyhow = "1.0.86"
 #ndarray = "0.16.0"
 #onnxruntime = "0.0.14"

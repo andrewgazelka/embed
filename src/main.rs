@@ -67,19 +67,21 @@ fn main() -> anyhow::Result<()> {
 fn print_similarities_grid(similarities: &[f32], queries: &[&str], docs: &[&str]) {
     use prettytable::{format, Cell, Row, Table};
 
+    const MAX_LEN: usize = 50;
+
     let mut table = Table::new();
     table.set_format(*format::consts::FORMAT_BOX_CHARS);
 
     // Add header row with document texts
     let mut header = Row::new(vec![Cell::new("Query / Document").style_spec("bFc")]);
     for doc in docs {
-        header.add_cell(Cell::new(&truncate_text(doc, 30)).style_spec("bFc"));
+        header.add_cell(Cell::new(&wrap_text(doc, MAX_LEN)).style_spec("bFc"));
     }
     table.add_row(header);
 
     // Add rows for each query
     for (i, query) in queries.iter().enumerate() {
-        let mut row = Row::new(vec![Cell::new(&truncate_text(query, 30)).style_spec("bFr")]);
+        let mut row = Row::new(vec![Cell::new(&wrap_text(query, MAX_LEN)).style_spec("bFr")]);
         for j in 0..docs.len() {
             let similarity = similarities[i * docs.len() + j];
             row.add_cell(Cell::new(&format!("{similarity:.4}")));
@@ -91,10 +93,9 @@ fn print_similarities_grid(similarities: &[f32], queries: &[&str], docs: &[&str]
     table.printstd();
 }
 
-fn truncate_text(text: &str, max_length: usize) -> String {
-    if text.len() <= max_length {
-        text.to_string()
-    } else {
-        format!("{}...", &text[..max_length - 3])
-    }
+fn wrap_text(text: &str, max_width: usize) -> String {
+    textwrap::wrap(text, max_width)
+        .into_iter()
+        .collect::<Vec<_>>()
+        .join("\n")
 }
